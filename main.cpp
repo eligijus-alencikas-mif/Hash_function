@@ -1,3 +1,5 @@
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 
 #define OUTPUT_SIZE 16
@@ -33,23 +35,43 @@ char combineChars(unsigned const char a, unsigned const char b) {
 
 int main(const int argc, char **argv) {
     if (argc < 2) {
-        std::cerr << "Need an input" << std::endl;
+        std::cerr << "Please specify operation mode, pass argument 'f' for file mode and argument 'l' for inline mode" << std::endl;
         return 1;
     }
-    std::string input = argv[1];
 
-    std::cout << "Initial input is: " << input << std::endl;
-    std::cout << "Input length: " << input.size() << std::endl;
+    std::string input;
+
+    std::string first_argument = argv[1];
+
+    if (first_argument == "f") {
+        if (argc < 3) {
+            std::cerr << "Please specify a valid file" << std::endl;
+            return 1;
+        }
+        std::ifstream f(argv[2]);
+        if (!f.good()) {
+            std::cerr << "File is inaccessible" << std::endl;
+            return 1;
+        }
+        auto size = std::filesystem::file_size(argv[2]);
+        input.resize(size, '\0');
+        std::ifstream in(argv[2]);
+        in.read(&input[0], size);
+    }else if (first_argument == "l") {
+        if (argc < 3) {
+            std::cerr << "Please input some text" << std::endl;
+            return 1;
+        }
+        input = argv[2];
+    }else {
+        std::cerr << "Incorrect argument" << std::endl;
+        return 1;
+    }
 
     for (size_t i = 0; input.size() < OUTPUT_SIZE; i++) {
         auto split = splitChar(input.at(i));
         input.at(0) = split.at(0);
         input += split.at(1);
-    }
-
-    for (size_t i = 0; input.size() > OUTPUT_SIZE; i++) {
-        input.at(i) = combineChars(input.back(), input.at(i));
-        input.pop_back();
     }
 
     input.at(0) = combineChars(input.at(0), input.at(1));
@@ -62,8 +84,14 @@ int main(const int argc, char **argv) {
     }
     input.at(0) = combineChars(input.at(0), input.at(1));
 
-    std::cout << "The hash: " << input << std::endl;
-    std::cout << "Hash length: " << input.size() << std::endl;
+    for (size_t i = 0; input.size() > OUTPUT_SIZE; i++) {
+        if (i >= input.size()) {
+            i = 0;
+        }
+        input.at(i) = combineChars(input.back(), input.at(i));
+        input.pop_back();
+    }
 
+    std::cout << input;
     return 0;
 }
