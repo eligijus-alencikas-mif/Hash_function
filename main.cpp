@@ -43,29 +43,22 @@ int main(const int argc, char **argv) {
 
     std::string first_argument = argv[1];
 
-    if (first_argument == "f") {
-        if (argc < 3) {
-            std::cerr << "Please specify a valid file" << std::endl;
-            return 1;
-        }
-        std::ifstream f(argv[2]);
-        if (!f.good()) {
-            std::cerr << "File is inaccessible" << std::endl;
-            return 1;
-        }
-        auto size = std::filesystem::file_size(argv[2]);
-        input.resize(size, '\0');
-        std::ifstream in(argv[2]);
-        in.read(&input[0], size);
-    }else if (first_argument == "l") {
+    if (first_argument == "l") {
         if (argc < 3) {
             std::cerr << "Please input some text" << std::endl;
             return 1;
         }
         input = argv[2];
     }else {
-        std::cerr << "Incorrect argument" << std::endl;
-        return 1;
+        std::ifstream f(argv[1]);
+        if (!f.good()) {
+            std::cerr << "File is inaccessible" << std::endl;
+            return 1;
+        }
+        auto size = std::filesystem::file_size(argv[1]);
+        input.resize(size, '\0');
+        std::ifstream in(argv[1]);
+        in.read(&input[0], size);
     }
 
     for (size_t i = 0; input.size() < OUTPUT_SIZE; i++) {
