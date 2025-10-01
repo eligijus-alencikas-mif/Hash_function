@@ -1,5 +1,7 @@
 #include <iostream>
 
+#define OUTPUT_SIZE 16
+
 size_t incrementor = 1;
 
 size_t concatenate(const unsigned short a, const unsigned short b) {
@@ -14,15 +16,19 @@ std::string splitChar(unsigned char target) {
         target += 33 + ++incrementor;
     }
 
-    split += static_cast<unsigned char>((target + ++incrementor - 33)*3 % 94 + 33);
-    split += static_cast<unsigned char>((split.at(0) + ++incrementor - 33)*3 % 94 + 33);
+    split += static_cast<char>((target + ++incrementor - 33)*3 % 94 + 33);
+    split += static_cast<char>((split.at(0) + ++incrementor - 33)*3 % 94 + 33);
     return split;
 }
 
 char combineChars(unsigned const char a, unsigned const char b) {
-    const auto position = concatenate(a, b);
+    auto position = concatenate(a, b);
 
-    return static_cast<unsigned char>((position + ++incrementor - 33)*3 % 94 + 33);
+    if (position < 33) {
+        position += 33 + ++incrementor;
+    }
+
+    return static_cast<char>((position + ++incrementor - 33)*3 % 94 + 33);
 }
 
 int main(const int argc, char **argv) {
@@ -32,8 +38,19 @@ int main(const int argc, char **argv) {
     }
     std::string input = argv[1];
 
-    std::cout << "The input is: " << input << std::endl;
+    std::cout << "Initial input is: " << input << std::endl;
     std::cout << "Input length: " << input.size() << std::endl;
+
+    for (size_t i = 0; input.size() < OUTPUT_SIZE; i++) {
+        auto split = splitChar(input.at(i));
+        input.at(0) = split.at(0);
+        input += split.at(1);
+    }
+
+    for (size_t i = 0; input.size() > OUTPUT_SIZE; i++) {
+        input.at(i) = combineChars(input.back(), input.at(i));
+        input.pop_back();
+    }
 
     input.at(0) = combineChars(input.at(0), input.at(1));
     for (size_t i = 1; i < input.size(); i++) {
