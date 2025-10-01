@@ -57,8 +57,7 @@ int main(const int argc, char **argv) {
         }
         auto size = std::filesystem::file_size(argv[1]);
         input.resize(size, '\0');
-        std::ifstream in(argv[1]);
-        in.read(&input[0], size);
+        f.read(&input[0], size);
     }
 
     for (size_t i = 0; input.size() < OUTPUT_SIZE; i++) {
