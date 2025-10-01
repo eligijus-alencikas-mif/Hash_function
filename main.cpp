@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iostream>
 
-#define OUTPUT_SIZE 16
+#define OUTPUT_SIZE 64
 
 size_t incrementor = 1;
 
