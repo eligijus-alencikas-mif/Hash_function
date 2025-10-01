@@ -25,7 +25,27 @@ Hash funkcija atitinka visas iškeltas hash funkcijos savybes
 
 ## Eksperimentų rezultatai
 
-### 1. Testinių failų rezultatai
+## 1. Testinių failų rezultatai
+
+test_1_char.txt (a):
+
+```<rg(E|I4U<E*-\K@I"sF/8i^-&i@s|oJ),7`eH%D#\+"CL_xe~78e6U`q$q~k2;q```
+
+test_1_char_b.txt (b):
+
+```e'bIVsx5:eB_H7`q*u@kv}ZUNI^ILyPK6g@{heby6/J)|#Z+0!jE8{RI"%4eLa6.```
+
+test_large.txt (L...):
+
+```2-z"WnC'<^eOI5{jMF0+bHtZjl!2dfTt_&]?ShI~_`1sonah:?2I,h.fOlF6Ld$u```
+
+test_large_modified.txt (v...):
+
+```ls.0i6MMf<7q]WY")b"5Bz`\"<un"\P~s4GU{zk|14mm{ZOH2M^Ap8N8+PLl*N|S```
+
+test_empty.txt:
+
+Nėra rezultato, programa užlūžta
 
 **Išvados:**
 -  Visi hash'ai yra tiksliai 64 simboliai (64 baitai)
@@ -45,6 +65,7 @@ Hash funkcija atitinka visas iškeltas hash funkcijos savybes
 ### 3. Deterministiškumo patikrinimas
 
 **Rezultatas:**  ATITINKA
+Įvestis: Eligijus
 ```
 Pirmas paleidimas: @L#w;F35nW`fVERts0QuWxMyHeNXtsH:A8!y!,99jYl~2_pH?HWA{lM/tWLflmvO
 Antras paleidimas:  @L#w;F35nW`fVERts0QuWxMyHeNXtsH:A8!y!,99jYl~2_pH?HWA{lM/tWLflmvO
