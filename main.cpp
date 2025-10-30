@@ -5,47 +5,71 @@
 // Number of characters in the output hash
 #define OUTPUT_SIZE 64
 
-// Global incrementor used in the hash functions to add variability
+// Define the used ASCII character range for the hash functions
+#define ASCII_MIN_RANGE 0
+#define ASCII_MAX_RANGE 255
+
+// Define the maximum and minimum values for the incrementor used for the multiplier in hash functions
+#define mIncrementor_MAX 100
+#define mIncrementor_MIN 3
+
+
+// Global incrementors used in the hash functions to add variability
 size_t incrementor = 1;
+size_t mIncrementor = mIncrementor_MIN;
 
 // Concatenates two number (unsinged short) values
-size_t concatenate(const unsigned short a, const unsigned short b) {
+size_t concatenate(const unsigned short a, const unsigned short b)
+{
     std::string result = std::to_string(a);
     result += std::to_string(b);
     return std::stoll(result);
 }
 
-// The ASCII character range the hash functions splitChar and combineChars return is from 33 to 126. Total unique characters: 94
+// Increments the multiplier incrementor and resets it if it exceeds the maximum value
+size_t multiplierIncrementor()
+{
+    if (++mIncrementor > mIncrementor_MAX)
+    {
+        mIncrementor = mIncrementor_MIN;
+    }
+    return mIncrementor;
+}
 
 // Part of the hash function. Takes one character and determanistically returns two random characters based on the input character and the incrementor
-std::string splitChar(unsigned char target) {
+std::string splitChar(unsigned char target)
+{
     std::string split;
-    if (target < 33) {
-        target += 33 + ++incrementor;
+    if (target < ASCII_MIN_RANGE)
+    {
+        target += ASCII_MIN_RANGE + ++incrementor;
     }
 
-    // ASCII Characters in use are from 33 to 126. Total unique characters: 94
-    split += static_cast<char>((target + ++incrementor - 33)*3 % 94 + 33);
-    split += static_cast<char>((split.at(0) + ++incrementor - 33)*3 % 94 + 33);
+    split += static_cast<unsigned char>((target + ++incrementor - ASCII_MIN_RANGE) * 3 % (ASCII_MAX_RANGE - ASCII_MIN_RANGE + 1) + ASCII_MIN_RANGE);
+    split += static_cast<unsigned char>((split.at(0) + ++incrementor - ASCII_MIN_RANGE) * 3 % (ASCII_MAX_RANGE - ASCII_MIN_RANGE + 1) + ASCII_MIN_RANGE);
     return split;
 }
 
 // Part of the hash function. Takes two characters and determanistacally returns one random character based on both input characters and the incrementor
-char combineChars(unsigned const char a, unsigned const char b) {
+unsigned char combineChars(unsigned const char a, unsigned const char b)
+{
     auto position = concatenate(a, b);
 
-    if (position < 33) {
-        position += 33 + ++incrementor;
+    if (position < ASCII_MIN_RANGE)
+    {
+        position += ASCII_MIN_RANGE + ++incrementor;
     }
 
-    return static_cast<char>((position + ++incrementor - 33)*3 % 94 + 33);
+    return static_cast<unsigned char>((position + ++incrementor - ASCII_MIN_RANGE) * 3 % (ASCII_MAX_RANGE - ASCII_MIN_RANGE + 1) + ASCII_MIN_RANGE);
 }
 
-std::string readFile(std::string&& file_name){
+std::string readFile(std::string &&file_name)
+{
     std::ifstream f(file_name);
     std::string out;
 
-    if (!f.good()) {
+    if (!f.good())
+    {
         std::cerr << "File is inaccessible" << std::endl;
         return "";
     }
@@ -56,7 +80,8 @@ std::string readFile(std::string&& file_name){
     return out;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     // Test variables
     // argc = 3;
     // argv[1] = "l";
@@ -66,7 +91,8 @@ int main(int argc, char **argv) {
     // If there is only one argument it will assume it is operating in file mode and expect the first argument to be a file
 
     // This checks if there is a first argument
-    if (argc < 2) {
+    if (argc < 2)
+    {
         std::cerr << "Please specify operation mode, pass argument 'f' for file mode and argument 'l' for inline mode" << std::endl;
         return 1;
     }
@@ -75,24 +101,32 @@ int main(int argc, char **argv) {
     std::string input;
 
     // Parse arguments
-    if (argv[1] == "l") {
-        if (argc < 3) {
+    if (argv[1] == "l")
+    {
+        if (argc < 3)
+        {
             std::cerr << "Please input some text" << std::endl;
             return 1;
         }
         input = argv[2];
-    }else if (argv[1] == "f"){
-        if (argc < 3) {
+    }
+    else if (argv[1] == "f")
+    {
+        if (argc < 3)
+        {
             std::cerr << "Please input the filename" << std::endl;
             return 1;
         }
         input = readFile(std::string(argv[2]));
-    } else{
+    }
+    else
+    {
         input = readFile(std::string(argv[1]));
     }
 
     // Can't hash an empty string
-    if(input.size() == 0){
+    if (input.size() == 0)
+    {
         std::cerr << "Input is empty" << std::endl;
         return 1;
     }
@@ -100,7 +134,8 @@ int main(int argc, char **argv) {
     // Hash start
 
     // If the input is too small expand it to required size
-    for (size_t i = 0; input.size() < OUTPUT_SIZE; i++) {
+    for (size_t i = 0; input.size() < OUTPUT_SIZE; i++)
+    {
         auto split = splitChar(input.at(i));
         input.at(0) = split.at(0);
         input += split.at(1);
@@ -108,29 +143,36 @@ int main(int argc, char **argv) {
 
     // Hash process from left to right
     input.at(0) = combineChars(input.at(0), input.at(1));
-    for (size_t i = 1; i < input.size(); i++) {
-        input.at(i) = combineChars(input.at(i-1), input.at(i));
+    for (size_t i = 1; i < input.size(); i++)
+    {
+        input.at(i) = combineChars(input.at(i - 1), input.at(i));
     }
 
     // Hash process from right to left
-    for (size_t i = input.size() - 2; i > 0; i--) {
-        input.at(i) = combineChars(input.at(i+1), input.at(i));
+    for (size_t i = input.size() - 2; i > 0; i--)
+    {
+        input.at(i) = combineChars(input.at(i + 1), input.at(i));
     }
     input.at(0) = combineChars(input.at(0), input.at(1));
 
     // If the input is too large shrink it to required size
-    for (size_t i = 0; input.size() > OUTPUT_SIZE; i++) {
-        if (i >= input.size()) {
+    for (size_t i = 0; input.size() > OUTPUT_SIZE; i++)
+    {
+        if (i >= input.size())
+        {
             i = 0;
         }
         input.at(i) = combineChars(input.back(), input.at(i));
         input.pop_back();
     }
-
+    
 
     // Result output
-    std::cout << input;
-
+    for (auto c : input)
+    {
+        std::cout << std::hex << (static_cast<int>(c) + 128);
+    }
+    
 
     return 0;
 }
