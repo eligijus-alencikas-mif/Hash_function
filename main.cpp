@@ -101,7 +101,8 @@ int main(int argc, char **argv)
     std::string input;
 
     // Parse arguments
-    if (argv[1] == "l")
+    std::string mode = argv[1];
+    if (mode == "l")
     {
         if (argc < 3)
         {
@@ -110,7 +111,7 @@ int main(int argc, char **argv)
         }
         input = argv[2];
     }
-    else if (argv[1] == "f")
+    else if (mode == "f")
     {
         if (argc < 3)
         {
