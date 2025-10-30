@@ -2,8 +2,10 @@
 #include <fstream>
 #include <iostream>
 
+// Number of characters in the output hash
 #define OUTPUT_SIZE 64
 
+// Global incrementor used in the hash functions to add variability
 size_t incrementor = 1;
 
 // Concatenates two number (unsinged short) values
